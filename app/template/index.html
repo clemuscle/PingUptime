@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PingUptime</title>
+</head>
+<body>
+  <h1>PingUptime - Service Status Checker</h1>
+  <form method="post">
+    <input name="url" type="url" placeholder="https://example.com" required>
+    <button type="submit">Ajouter</button>
+  </form>
+  <h2>Status:</h2>
+  <ul>
+    {% for url, status in statuses %}
+      <li>{{ url }} - <strong>{{ status }}</strong></li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
