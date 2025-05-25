@@ -39,6 +39,16 @@ resource "oci_core_security_list" "sl" {
     }
   }
 
+  # on ajoute le HTTP sur le port 5000
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+    tcp_options {
+      min = 5000
+      max = 5000
+    }
+  }
+
   # egress via bloc
   egress_security_rules {
     protocol    = "all"
