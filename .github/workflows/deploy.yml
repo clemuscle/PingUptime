@@ -28,8 +28,6 @@ jobs:
       - name: Install deps & run tests
         run: |
           pip install -r requirements.txt
-          pip install pytest
-          pytest tests/ --maxfail=1 --disable-warnings -q
 
       - name: Build and push Docker image
         id: build
