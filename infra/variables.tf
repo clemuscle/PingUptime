@@ -1,38 +1,49 @@
-variable "name" {
-  type    = string
-  default = "docker-remote"
+variable "region" {
+  description = "Région OCI"
+  type        = string
+  default     = "eu-marseille-1"
 }
 
-/*
-Available flex shapes:
-"VM.Optimized3.Flex"  # Intel Ice Lake
-"VM.Standard3.Flex"   # Intel Ice Lake
-"VM.Standard.A1.Flex" # Ampere Altra
-"VM.Standard.E3.Flex" # AMD Rome
-"VM.Standard.E4.Flex" # AMD Milan
-*/
-
-variable "shape" {
-  type    = string
-  default = "VM.Standard.E4.Flex"
+variable "compartment_id" {
+  description = "OCID du compartment (root tenancy par défaut)"
+  type        = string
+  default     = "" # laisser vide pour utiliser le root tenancy
 }
 
-variable "how_many_nodes" {
-  type    = number
-  default = 1
+variable "vcn_cidr" {
+  description = "CIDR block du VCN"
+  type        = string
+  default     = "10.0.0.0/16"
 }
 
-variable "availability_domain" {
-  type    = number
-  default = 0
+variable "subnet_cidr" {
+  description = "CIDR block du subnet"
+  type        = string
+  default     = "10.0.1.0/24"
 }
 
-variable "ocpus_per_node" {
-  type    = number
-  default = 2
+variable "ssh_key_filename" {
+  description = "Nom du fichier de la clé privée SSH générée"
+  type        = string
+  default     = "id_rsa_pinguptime"
 }
 
-variable "memory_in_gbs_per_node" {
-  type    = number
-  default = 16
+variable "oci_tenancy_ocid" {
+  description = "OCID de la tenancy OCI"
+  type        = string
+}
+
+variable "oci_user_ocid" {
+  description = "OCID de l'utilisateur OCI"
+  type        = string
+}
+
+variable "oci_fingerprint" {
+  description = "Empreinte de la clé publique configurée dans OCI"
+  type        = string
+}
+
+variable "oci_private_key_path" {
+  description = "Chemin vers votre clé privée OCI (PEM)"
+  type        = string
 }

@@ -1,29 +1,64 @@
-name: Deploy to OCI
+name: CI/CD PingUpTime
 
 on:
   push:
     branches: [ main ]
 
 jobs:
+  test_and_build:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.build.outputs.image_tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Install deps & run tests
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+          pytest --maxfail=1 --disable-warnings -q
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.REGISTRY }}:${{ github.sha }}
+          platforms: linux/amd64
+          outputs: type=registry
+
   deploy:
+    needs: test_and_build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up SSH
+      - name: Load SSH key
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.OCI_PRIVATE_KEY }}
 
-      - name: Deploy application
+      - name: Deploy to OCI VM
         run: |
-          ssh -o StrictHostKeyChecking=no opc@${{ secrets.INSTANCE_PUBLIC_IP }} << 'EOF'
-            cd /home/opc/pinguptime
-            git pull
-            docker build -t pinguptime .
-            docker stop pinguptime || true
-            docker rm pinguptime || true
-            docker run -d -p 80:5000 --name pinguptime pinguptime
-          EOF
+          echo "Pulling new image..."
+          ssh ubuntu@${{ secrets.INSTANCE_PUBLIC_IP }} \
+            "docker pull ${{ secrets.REGISTRY }}:${{ needs.test_and_build.outputs.image_tag }} && \
+             docker rm -f pinguptime || true && \
+             docker run -d \
+               --name pinguptime \
+               --restart unless-stopped \
+               -p 5000:5000 \
+               ${{ secrets.REGISTRY }}:${{ needs.test_and_build.outputs.image_tag }}"

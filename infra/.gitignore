@@ -7,3 +7,6 @@ id_rsa*
 
 resources/.DS_Store
 .DS_Store
+
+# API keys
+*.pem
