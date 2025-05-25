@@ -25,9 +25,16 @@ jobs:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
 
-      - name: Install deps & run tests
+      - name: Install deps
         run: |
           pip install -r requirements.txt
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
         id: build
@@ -53,10 +60,10 @@ jobs:
         run: |
           echo "Pulling new image..."
           ssh ubuntu@${{ secrets.INSTANCE_PUBLIC_IP }} \
-            "docker pull ${{ secrets.REGISTRY }}:${{ needs.test_and_build.outputs.image_tag }} && \
+            "docker pull ghcr.io/clemuscle/pinguptime:${{ needs.test_and_build.outputs.image_tag }} && \
              docker rm -f pinguptime || true && \
              docker run -d \
                --name pinguptime \
                --restart unless-stopped \
                -p 5000:5000 \
-               ${{ secrets.REGISTRY }}:${{ needs.test_and_build.outputs.image_tag }}"
+               ghcr.io/clemuscle/pinguptime:${{ needs.test_and_build.outputs.image_tag }}"
