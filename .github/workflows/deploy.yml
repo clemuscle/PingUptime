@@ -61,7 +61,7 @@ jobs:
       - name: Deploy to OCI VM
         run: |
           echo "Pulling new image..."
-          ssh ubuntu@${{ secrets.INSTANCE_PUBLIC_IP }} \
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.INSTANCE_PUBLIC_IP }} \
             "docker pull ghcr.io/clemuscle/pinguptime:${{ needs.test_and_build.outputs.image_tag }} && \
              docker rm -f pinguptime || true && \
              docker run -d \
