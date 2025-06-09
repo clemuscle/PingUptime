@@ -39,13 +39,13 @@ resource "oci_core_security_list" "sl" {
     }
   }
 
-  # on ajoute le HTTP sur le port 5000
+  # HTTP public sur port 80
   ingress_security_rules {
     protocol = "6"
     source   = "0.0.0.0/0"
     tcp_options {
-      min = 5000
-      max = 5000
+      min = 80
+      max = 80
     }
   }
 

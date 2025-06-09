@@ -67,5 +67,5 @@ jobs:
              docker run -d \
                --name pinguptime \
                --restart unless-stopped \
-               -p 5000:5000 \
+               -p 80:80 \
                ghcr.io/clemuscle/pinguptime:${{ needs.test_and_build.outputs.image_tag }}"

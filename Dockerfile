@@ -14,6 +14,6 @@ COPY . .
 RUN chown -R app:app /app
 USER app
 
-EXPOSE 5000
-HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost:5000/ || exit 1
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost:80/ || exit 1
+CMD ["gunicorn", "--bind", "0.0.0.0:80", "app:app"]
