@@ -2,7 +2,8 @@
 .terraform*
 terraform.tfstate*
 *.tfvars
-infra/*.tfvars
+infra/terraform.tfvars
+
 
 # SSH keys
 id_rsa*
